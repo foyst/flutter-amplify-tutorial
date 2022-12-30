@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:amplify_authenticator/amplify_authenticator.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
+import 'package:amplify_storage_s3/amplify_storage_s3.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterapp/amplifyconfiguration.dart';
 import 'package:image_picker/image_picker.dart';
@@ -48,6 +51,7 @@ class _MyAppState extends State<MyApp> {
   void _configureAmplify() async {
     try {
       await Amplify.addPlugin(AmplifyAuthCognito());
+      await Amplify.addPlugin(AmplifyStorageS3());
       await Amplify.configure(amplifyconfig);
     } on Exception catch (e) {
       print('Error configuring Amplify: $e');
@@ -81,7 +85,17 @@ class _MyHomePageState extends State<MyHomePage> {
     final XFile? image = await picker.pickImage(source: ImageSource.gallery);
 
     if (image != null) {
-      var imageBytes = await image!.readAsBytes();
+      var imageBytes = await image.readAsBytes();
+
+      final UploadFileResult result = await Amplify.Storage.uploadFile(
+          local: File.fromUri(Uri.file(image.path)),
+          key: 'ExampleKey',
+          onProgress: (progress) {
+            safePrint('Fraction completed: ${progress.getFractionCompleted()}');
+          },
+          options: UploadFileOptions(
+            accessLevel: StorageAccessLevel.protected
+          ));
 
       setState(() {
         // This call to setState tells the Flutter framework that something has

@@ -1,0 +1,13 @@
+{
+  "resourceName": "userDataStorage",
+  "policyUUID": "121d5dc2",
+  "bucketName": "flutter-app-user-data-storage",
+  "storageAccess": "auth",
+  "guestAccess": [],
+  "authAccess": [
+    "CREATE_AND_UPDATE",
+    "READ",
+    "DELETE"
+  ],
+  "groupAccess": {}
+}

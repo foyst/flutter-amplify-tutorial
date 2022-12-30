@@ -34,6 +34,7 @@ dependencies:
   amplify_flutter: ^0.6.0
   amplify_auth_cognito: ^0.6.0
   amplify_authenticator: ^0.2.0
+  amplify_storage_s3: ^0.6.0
 
 
   # The following adds the Cupertino Icons font to your application.
