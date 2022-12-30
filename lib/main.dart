@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:path_provider/path_provider.dart';
 
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:amplify_authenticator/amplify_authenticator.dart';
@@ -79,8 +80,35 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   ImageProvider? _image;
+  static const String profilePictureKey = "ProfilePicture.jpg";
 
-  void _selectProfilePicture() async {
+  @override
+  void initState() {
+    super.initState();
+    _retrieveProfilePicture();
+  }
+
+  void _retrieveProfilePicture() async {
+    final documentsDir = await getApplicationDocumentsDirectory();
+    final filepath = "${documentsDir.path}/ProfilePicture.jpg";
+    final file = File(filepath);
+
+    final userFiles = await Amplify.Storage.list(
+        options: ListOptions(accessLevel: StorageAccessLevel.protected));
+    if (userFiles.items.any((element) => element.key == profilePictureKey)) {
+      await Amplify.Storage.downloadFile(
+          key: profilePictureKey,
+          local: file,
+          options:
+              DownloadFileOptions(accessLevel: StorageAccessLevel.protected));
+
+      setState(() {
+        _image = FileImage(file);
+      });
+    }
+  }
+
+  void _selectNewProfilePicture() async {
     final ImagePicker picker = ImagePicker();
     final XFile? image = await picker.pickImage(source: ImageSource.gallery);
 
@@ -89,13 +117,12 @@ class _MyHomePageState extends State<MyHomePage> {
 
       final UploadFileResult result = await Amplify.Storage.uploadFile(
           local: File.fromUri(Uri.file(image.path)),
-          key: 'ExampleKey',
+          key: profilePictureKey,
           onProgress: (progress) {
             safePrint('Fraction completed: ${progress.getFractionCompleted()}');
           },
-          options: UploadFileOptions(
-            accessLevel: StorageAccessLevel.protected
-          ));
+          options:
+              UploadFileOptions(accessLevel: StorageAccessLevel.protected));
 
       setState(() {
         // This call to setState tells the Flutter framework that something has
@@ -162,7 +189,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _selectProfilePicture,
+        onPressed: _selectNewProfilePicture,
         tooltip: 'Increment',
         child: const Icon(Icons.add),
       ), // This trailing comma makes auto-formatting nicer for build methods.
