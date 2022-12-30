@@ -44,6 +44,8 @@ PODS:
     - Amplify (= 1.28.2)
     - AWSCore (~> 2.28.0)
   - Flutter (1.0.0)
+  - image_picker_ios (0.0.1):
+    - Flutter
   - ObjectMapper (4.2.0)
   - SwiftFormat/CLI (0.50.6)
   - SwiftLint (0.48.0)
@@ -53,6 +55,7 @@ DEPENDENCIES:
   - amplify_core (from `.symlinks/plugins/amplify_core/ios`)
   - amplify_flutter_ios (from `.symlinks/plugins/amplify_flutter_ios/ios`)
   - Flutter (from `Flutter`)
+  - image_picker_ios (from `.symlinks/plugins/image_picker_ios/ios`)
 
 SPEC REPOS:
   trunk:
@@ -77,6 +80,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/amplify_flutter_ios/ios"
   Flutter:
     :path: Flutter
+  image_picker_ios:
+    :path: ".symlinks/plugins/image_picker_ios/ios"
 
 SPEC CHECKSUMS:
   Amplify: 5dfd8bdcd41f8a67d96ebd72e5ef1c5aab8500b5
@@ -91,6 +96,7 @@ SPEC CHECKSUMS:
   AWSMobileClient: c898658a4d15e64e07d39c7dc6354fd3ea3055a9
   AWSPluginsCore: 0842f0ec7df892adddeea71b05c8e9bee84b2eb0
   Flutter: f04841e97a9d0b0a8025694d0796dd46242b2854
+  image_picker_ios: b786a5dcf033a8336a657191401bfdf12017dabb
   ObjectMapper: 1eb41f610210777375fa806bf161dc39fb832b81
   SwiftFormat: d89e201c4e121554de347f764e4ed780526b5173
   SwiftLint: 284cea64b6187c5d6bd83e9a548a64104d546447
