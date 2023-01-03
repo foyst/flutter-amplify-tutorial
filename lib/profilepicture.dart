@@ -13,6 +13,7 @@ class ProfilePicture extends StatefulWidget {
 
 class _ProfilePictureState extends State<ProfilePicture> {
   ImageProvider? _image;
+  bool _isLoading = true;
   static const String profilePictureKey = "ProfilePicture.jpg";
 
   @override
@@ -37,24 +38,31 @@ class _ProfilePictureState extends State<ProfilePicture> {
 
       setState(() {
         _image = FileImage(file);
+        _isLoading = false;
       });
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    if (_isLoading) {
+      return const CircularProgressIndicator(
+        value: null,
+        semanticsLabel: 'Circular progress indicator',
+      );
+    }
 
-    return 
-    GestureDetector(
+    return GestureDetector(
       onTap: _selectNewProfilePicture,
       child: Container(
-                width: 200,
-                height: 200,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  image: DecorationImage(image: _image ?? _placeholderProfilePicture() , fit: BoxFit.fill),
-                ),
-              ),
+        width: 200,
+        height: 200,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          image: DecorationImage(
+              image: _image ?? _placeholderProfilePicture(), fit: BoxFit.fill),
+        ),
+      ),
     );
   }
 
@@ -63,6 +71,10 @@ class _ProfilePictureState extends State<ProfilePicture> {
     final XFile? image = await picker.pickImage(source: ImageSource.gallery);
 
     if (image != null) {
+      setState(() {
+        _isLoading = true;
+      });
+
       var imageBytes = await image.readAsBytes();
 
       final UploadFileResult result = await Amplify.Storage.uploadFile(
@@ -76,12 +88,12 @@ class _ProfilePictureState extends State<ProfilePicture> {
 
       setState(() {
         _image = MemoryImage(imageBytes);
+        _isLoading = false;
       });
     }
   }
-  
-  _placeholderProfilePicture() {
 
+  _placeholderProfilePicture() {
     return const AssetImage("assets/profile-placeholder.png");
   }
 }
