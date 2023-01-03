@@ -1,13 +1,10 @@
-import 'dart:io';
-import 'package:path_provider/path_provider.dart';
-
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:amplify_authenticator/amplify_authenticator.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:amplify_storage_s3/amplify_storage_s3.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterapp/amplifyconfiguration.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:flutterapp/profilepicture.dart';
 
 void main() {
   runApp(const MyApp());
@@ -79,61 +76,6 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  ImageProvider? _image;
-  static const String profilePictureKey = "ProfilePicture.jpg";
-
-  @override
-  void initState() {
-    super.initState();
-    _retrieveProfilePicture();
-  }
-
-  void _retrieveProfilePicture() async {
-    final documentsDir = await getApplicationDocumentsDirectory();
-    final filepath = "${documentsDir.path}/ProfilePicture.jpg";
-    final file = File(filepath);
-
-    final userFiles = await Amplify.Storage.list(
-        options: ListOptions(accessLevel: StorageAccessLevel.protected));
-    if (userFiles.items.any((element) => element.key == profilePictureKey)) {
-      await Amplify.Storage.downloadFile(
-          key: profilePictureKey,
-          local: file,
-          options:
-              DownloadFileOptions(accessLevel: StorageAccessLevel.protected));
-
-      setState(() {
-        _image = FileImage(file);
-      });
-    }
-  }
-
-  void _selectNewProfilePicture() async {
-    final ImagePicker picker = ImagePicker();
-    final XFile? image = await picker.pickImage(source: ImageSource.gallery);
-
-    if (image != null) {
-      var imageBytes = await image.readAsBytes();
-
-      final UploadFileResult result = await Amplify.Storage.uploadFile(
-          local: File.fromUri(Uri.file(image.path)),
-          key: profilePictureKey,
-          onProgress: (progress) {
-            safePrint('Fraction completed: ${progress.getFractionCompleted()}');
-          },
-          options:
-              UploadFileOptions(accessLevel: StorageAccessLevel.protected));
-
-      setState(() {
-        // This call to setState tells the Flutter framework that something has
-        // changed in this State, which causes it to rerun the build method below
-        // so that the display can reflect the updated values. If we changed
-        // _counter without calling setState(), then the build method would not be
-        // called again, and so nothing would appear to happen.
-        _image = MemoryImage(imageBytes);
-      });
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -176,23 +118,10 @@ class _MyHomePageState extends State<MyHomePage> {
               '0',
               style: Theme.of(context).textTheme.headline4,
             ),
-            if (_image != null)
-              Container(
-                width: 200,
-                height: 200,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  image: DecorationImage(image: _image!, fit: BoxFit.fill),
-                ),
-              )
+            const ProfilePicture(),
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _selectNewProfilePicture,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }
