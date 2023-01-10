@@ -94,9 +94,22 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _getUserProfile() async {
     final currentUser = await Amplify.Auth.getCurrentUser();
-    final queryPredicate = UserProfile.USERID.eq(currentUser.userId);
-    final request = ModelQueries.list<UserProfile>(UserProfile.classType,
-    where: queryPredicate);
+    GraphQLRequest<PaginatedResult<UserProfile>> request = GraphQLRequest(
+        document:
+            '''query MyQuery { userProfilesByUserId(userId: "${currentUser.userId}") {
+    items {
+      name
+      location
+      language
+      id
+      owner
+      createdAt
+      updatedAt
+      userId
+    }
+  }}''',
+        modelType: const PaginatedModelType(UserProfile.classType),
+        decodePath: "userProfilesByUserId");
     final response = await Amplify.API.query(request: request).response;
 
     if (response.data!.items.isNotEmpty) {
