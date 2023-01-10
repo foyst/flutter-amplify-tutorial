@@ -1,3 +1,4 @@
+import 'package:amplify_api/amplify_api.dart';
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:amplify_authenticator/amplify_authenticator.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
@@ -5,6 +6,8 @@ import 'package:amplify_storage_s3/amplify_storage_s3.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterapp/amplifyconfiguration.dart';
 import 'package:flutterapp/profilepicture.dart';
+
+import 'models/ModelProvider.dart';
 
 void main() {
   runApp(const MyApp());
@@ -50,6 +53,8 @@ class _MyAppState extends State<MyApp> {
     try {
       await Amplify.addPlugin(AmplifyAuthCognito());
       await Amplify.addPlugin(AmplifyStorageS3());
+      await Amplify.addPlugin(
+          AmplifyAPI(modelProvider: ModelProvider.instance));
       await Amplify.configure(amplifyconfig);
     } on Exception catch (e) {
       print('Error configuring Amplify: $e');
@@ -76,6 +81,34 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  final _nameController = TextEditingController();
+  final _locationController = TextEditingController();
+  final _languageController = TextEditingController();
+  UserProfile? _userProfile;
+
+  @override
+  void initState() {
+    super.initState();
+    _getUserProfile();
+  }
+
+  void _getUserProfile() async {
+    final currentUser = await Amplify.Auth.getCurrentUser();
+    final queryPredicate = UserProfile.USERID.eq(currentUser.userId);
+    final request = ModelQueries.list<UserProfile>(UserProfile.classType,
+    where: queryPredicate);
+    final response = await Amplify.API.query(request: request).response;
+
+    if (response.data!.items.isNotEmpty) {
+      _userProfile = response.data?.items[0];
+
+      setState(() {
+        _nameController.text = _userProfile?.name ?? "";
+        _locationController.text = _userProfile?.location ?? "";
+        _languageController.text = _userProfile?.language ?? "";
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -91,37 +124,79 @@ class _MyHomePageState extends State<MyHomePage> {
         // the App.build method, and use it to set our appbar title.
         title: Text(widget.title),
       ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Invoke "debug painting" (press "p" in the console, choose the
-          // "Toggle Debug Paint" action from the Flutter Inspector in Android
-          // Studio, or the "Toggle Debug Paint" command in Visual Studio Code)
-          // to see the wireframe for each widget.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '0',
-              style: Theme.of(context).textTheme.headline4,
-            ),
-            const ProfilePicture(),
-          ],
+      body: Padding(
+        padding: const EdgeInsets.fromLTRB(30, 0, 30, 0),
+        child: Center(
+          // Center is a layout widget. It takes a single child and positions it
+          // in the middle of the parent.
+          child: Column(
+            // Column is also a layout widget. It takes a list of children and
+            // arranges them vertically. By default, it sizes itself to fit its
+            // children horizontally, and tries to be as tall as its parent.
+            //
+            // Invoke "debug painting" (press "p" in the console, choose the
+            // "Toggle Debug Paint" action from the Flutter Inspector in Android
+            // Studio, or the "Toggle Debug Paint" command in Visual Studio Code)
+            // to see the wireframe for each widget.
+            //
+            // Column has various properties to control how it sizes itself and
+            // how it positions its children. Here we use mainAxisAlignment to
+            // center the children vertically; the main axis here is the vertical
+            // axis because Columns are vertical (the cross axis would be
+            // horizontal).
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Text(
+                'User Profile',
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
+              const ProfilePicture(),
+              TextField(
+                decoration: const InputDecoration(labelText: "Name"),
+                controller: _nameController,
+              ),
+              TextField(
+                decoration: const InputDecoration(labelText: "Location"),
+                controller: _locationController,
+              ),
+              TextField(
+                decoration:
+                    const InputDecoration(labelText: "Favourite Language"),
+                controller: _languageController,
+              )
+            ],
+          ),
         ),
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _updateUserDetails,
+        tooltip: 'Save Details',
+        child: const Icon(Icons.save),
+      ),
     );
+  }
+
+  Future<void> _updateUserDetails() async {
+    final currentUser = await Amplify.Auth.getCurrentUser();
+
+    final updatedUserProfile = _userProfile?.copyWith(
+            name: _nameController.text,
+            location: _locationController.text,
+            language: _languageController.text) ??
+        UserProfile(
+            userId: currentUser.userId,
+            name: _nameController.text,
+            location: _locationController.text,
+            language: _languageController.text);
+
+    final request = _userProfile == null
+        ? ModelMutations.create(updatedUserProfile)
+        : ModelMutations.update(updatedUserProfile);
+    final response = await Amplify.API.mutate(request: request).response;
+
+    final createdProfile = response.data;
+    if (createdProfile == null) {
+      safePrint('errors: ${response.errors}');
+    }
   }
 }

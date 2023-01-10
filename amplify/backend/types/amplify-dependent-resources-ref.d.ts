@@ -1,20 +1,26 @@
 export type AmplifyDependentResourcesAttributes = {
-    "auth": {
-        "flutterappauth": {
-            "IdentityPoolId": "string",
-            "IdentityPoolName": "string",
-            "UserPoolId": "string",
-            "UserPoolArn": "string",
-            "UserPoolName": "string",
-            "AppClientIDWeb": "string",
-            "AppClientID": "string",
-            "CreatedSNSRole": "string"
-        }
-    },
-    "storage": {
-        "userDataStorage": {
-            "BucketName": "string",
-            "Region": "string"
-        }
+  "api": {
+    "flutterapp": {
+      "GraphQLAPIEndpointOutput": "string",
+      "GraphQLAPIIdOutput": "string"
     }
+  },
+  "auth": {
+    "flutterappauth": {
+      "AppClientID": "string",
+      "AppClientIDWeb": "string",
+      "CreatedSNSRole": "string",
+      "IdentityPoolId": "string",
+      "IdentityPoolName": "string",
+      "UserPoolArn": "string",
+      "UserPoolId": "string",
+      "UserPoolName": "string"
+    }
+  },
+  "storage": {
+    "userDataStorage": {
+      "BucketName": "string",
+      "Region": "string"
+    }
+  }
 }
