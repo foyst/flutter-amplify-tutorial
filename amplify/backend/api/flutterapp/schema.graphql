@@ -8,7 +8,7 @@ type UserProfile @model
   { allow: owner, operations: [create, read, update, delete] }
 ])
 {
-  userId: String!
+  userId: String! @index
   name: String!
   location: String
   language: String
