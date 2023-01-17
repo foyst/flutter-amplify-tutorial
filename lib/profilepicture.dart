@@ -23,13 +23,12 @@ class _ProfilePictureState extends State<ProfilePicture> {
   }
 
   void _retrieveProfilePicture() async {
-    final documentsDir = await getApplicationDocumentsDirectory();
-    final filepath = "${documentsDir.path}/ProfilePicture.jpg";
-    final file = File(filepath);
-
     final userFiles = await Amplify.Storage.list(
         options: ListOptions(accessLevel: StorageAccessLevel.protected));
     if (userFiles.items.any((element) => element.key == profilePictureKey)) {
+      final documentsDir = await getApplicationDocumentsDirectory();
+      final filepath = "${documentsDir.path}/ProfilePicture.jpg";
+      final file = File(filepath);
       await Amplify.Storage.downloadFile(
           key: profilePictureKey,
           local: file,
@@ -38,6 +37,11 @@ class _ProfilePictureState extends State<ProfilePicture> {
 
       setState(() {
         _image = FileImage(file);
+        _isLoading = false;
+      });
+    } else {
+      setState(() {
+        _image = const AssetImage("assets/profile-placeholder.png");
         _isLoading = false;
       });
     }
