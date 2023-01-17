@@ -19,6 +19,11 @@ PODS:
     - Flutter
     - SwiftFormat/CLI
     - SwiftLint (= 0.48.0)
+  - amplify_datastore (0.0.1):
+    - Amplify (= 1.28.2)
+    - amplify_core
+    - AmplifyPlugins/AWSDataStorePlugin (= 1.28.2)
+    - Flutter
   - amplify_flutter_ios (0.0.1):
     - Amplify (= 1.28.2)
     - amplify_core
@@ -43,6 +48,10 @@ PODS:
     - AWSCore (~> 2.28.0)
     - AWSMobileClient (~> 2.28.0)
     - AWSPluginsCore (= 1.28.2)
+  - AmplifyPlugins/AWSDataStorePlugin (1.28.2):
+    - AWSCore (~> 2.28.0)
+    - AWSPluginsCore (= 1.28.2)
+    - SQLite.swift (= 0.13.2)
   - AmplifyPlugins/AWSS3StoragePlugin (1.28.2):
     - AWSCore (~> 2.28.0)
     - AWSPluginsCore (= 1.28.2)
@@ -73,6 +82,9 @@ PODS:
   - ObjectMapper (4.2.0)
   - path_provider_ios (0.0.1):
     - Flutter
+  - SQLite.swift (0.13.2):
+    - SQLite.swift/standard (= 0.13.2)
+  - SQLite.swift/standard (0.13.2)
   - Starscream (4.0.4)
   - SwiftFormat/CLI (0.50.6)
   - SwiftLint (0.48.0)
@@ -81,6 +93,7 @@ DEPENDENCIES:
   - amplify_api_ios (from `.symlinks/plugins/amplify_api_ios/ios`)
   - amplify_auth_cognito_ios (from `.symlinks/plugins/amplify_auth_cognito_ios/ios`)
   - amplify_core (from `.symlinks/plugins/amplify_core/ios`)
+  - amplify_datastore (from `.symlinks/plugins/amplify_datastore/ios`)
   - amplify_flutter_ios (from `.symlinks/plugins/amplify_flutter_ios/ios`)
   - amplify_storage_s3_ios (from `.symlinks/plugins/amplify_storage_s3_ios/ios`)
   - Flutter (from `Flutter`)
@@ -100,6 +113,7 @@ SPEC REPOS:
     - AWSPluginsCore
     - AWSS3
     - ObjectMapper
+    - SQLite.swift
     - Starscream
     - SwiftFormat
     - SwiftLint
@@ -111,6 +125,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/amplify_auth_cognito_ios/ios"
   amplify_core:
     :path: ".symlinks/plugins/amplify_core/ios"
+  amplify_datastore:
+    :path: ".symlinks/plugins/amplify_datastore/ios"
   amplify_flutter_ios:
     :path: ".symlinks/plugins/amplify_flutter_ios/ios"
   amplify_storage_s3_ios:
@@ -127,6 +143,7 @@ SPEC CHECKSUMS:
   amplify_api_ios: e7dcf9758c6b6985f5e624d0f48fbfed4e1e1c8f
   amplify_auth_cognito_ios: 5995925d2e821ab78dd445f047aff8aa525aadc9
   amplify_core: 0876b2fbbcec7619f5b58b20c59ecc0118f65a47
+  amplify_datastore: 52417a5978a69db98e59e854b3a409d1624ffe2d
   amplify_flutter_ios: 8b85da543bdfdcb746c48a420771b8259dd9ba31
   amplify_storage_s3_ios: ea81d94b51620e88d6258b98292a3c0287444356
   AmplifyPlugins: ab878c981d9d51654288d075653a40fe22b27c61
@@ -142,10 +159,11 @@ SPEC CHECKSUMS:
   image_picker_ios: b786a5dcf033a8336a657191401bfdf12017dabb
   ObjectMapper: 1eb41f610210777375fa806bf161dc39fb832b81
   path_provider_ios: 14f3d2fd28c4fdb42f44e0f751d12861c43cee02
+  SQLite.swift: 4fc2be46c36392e3b87afe6fe7f1801c1daa07ef
   Starscream: 5178aed56b316f13fa3bc55694e583d35dd414d9
   SwiftFormat: d89e201c4e121554de347f764e4ed780526b5173
   SwiftLint: 284cea64b6187c5d6bd83e9a548a64104d546447
 
-PODFILE CHECKSUM: ef19549a9bc3046e7bb7d2fab4d021637c0c58a3
+PODFILE CHECKSUM: cc1f88378b4bfcf93a6ce00d2c587857c6008d3b
 
 COCOAPODS: 1.11.3

@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:amplify_api/amplify_api.dart';
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:amplify_authenticator/amplify_authenticator.dart';
+import 'package:amplify_datastore/amplify_datastore.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:amplify_storage_s3/amplify_storage_s3.dart';
 import 'package:flutter/material.dart';
@@ -55,7 +58,12 @@ class _MyAppState extends State<MyApp> {
       await Amplify.addPlugin(AmplifyStorageS3());
       await Amplify.addPlugin(
           AmplifyAPI(modelProvider: ModelProvider.instance));
+      await Amplify.addPlugin(
+          AmplifyDataStore(modelProvider: ModelProvider.instance,
+          syncInterval: 5)); //For demo purposes only
       await Amplify.configure(amplifyconfig);
+      Amplify.DataStore.stop();
+      Amplify.DataStore.clear();
     } on Exception catch (e) {
       print('Error configuring Amplify: $e');
     }
@@ -85,6 +93,7 @@ class _MyHomePageState extends State<MyHomePage> {
   final _locationController = TextEditingController();
   final _languageController = TextEditingController();
   UserProfile? _userProfile;
+  StreamSubscription<QuerySnapshot<UserProfile>>? _stream;
 
   @override
   void initState() {
@@ -94,33 +103,20 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _getUserProfile() async {
     final currentUser = await Amplify.Auth.getCurrentUser();
-    GraphQLRequest<PaginatedResult<UserProfile>> request = GraphQLRequest(
-        document:
-            '''query MyQuery { userProfilesByUserId(userId: "${currentUser.userId}") {
-    items {
-      name
-      location
-      language
-      id
-      owner
-      createdAt
-      updatedAt
-      userId
-    }
-  }}''',
-        modelType: const PaginatedModelType(UserProfile.classType),
-        decodePath: "userProfilesByUserId");
-    final response = await Amplify.API.query(request: request).response;
-
-    if (response.data!.items.isNotEmpty) {
-      _userProfile = response.data?.items[0];
-
-      setState(() {
-        _nameController.text = _userProfile?.name ?? "";
-        _locationController.text = _userProfile?.location ?? "";
-        _languageController.text = _userProfile?.language ?? "";
-      });
-    }
+    _stream = Amplify.DataStore.observeQuery(UserProfile.classType,
+            where: UserProfile.USERID.eq(currentUser.userId))
+        .listen(
+      (snapshot) {
+        if (snapshot.isSynced && snapshot.items.isNotEmpty) {
+          _userProfile = snapshot.items.first;
+          setState(() {
+            _nameController.text = _userProfile!.name;
+            _locationController.text = _userProfile!.location ?? "";
+            _languageController.text = _userProfile!.language ?? "";
+          });
+        }
+      },
+    );
   }
 
   @override
@@ -192,7 +188,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Future<void> _updateUserDetails() async {
     final currentUser = await Amplify.Auth.getCurrentUser();
 
-    final updatedUserProfile = _userProfile?.copyWith(
+    final UserProfile updatedUserProfile = _userProfile?.copyWith(
             name: _nameController.text,
             location: _locationController.text,
             language: _languageController.text) ??
@@ -202,14 +198,12 @@ class _MyHomePageState extends State<MyHomePage> {
             location: _locationController.text,
             language: _languageController.text);
 
-    final request = _userProfile == null
-        ? ModelMutations.create(updatedUserProfile)
-        : ModelMutations.update(updatedUserProfile);
-    final response = await Amplify.API.mutate(request: request).response;
+    await Amplify.DataStore.save(updatedUserProfile);
+  }
 
-    final createdProfile = response.data;
-    if (createdProfile == null) {
-      safePrint('errors: ${response.errors}');
-    }
+  @override
+  void dispose() {
+    _stream?.cancel();
+    super.dispose();
   }
 }
