@@ -22,9 +22,23 @@ Run an `amplify init` to setup your local environment
 
 Follow this up with an `amplify push` to provision the Auth, Storage and API features in your AWS Account
 
+Run `dart pub get` to install all Dart dependencies.
+
+Finally, run `flutter run` to launch the app in the iOS emulator (if you're on Mac, otherwise it's an Android AVD if you have one set up)
+
+If you see "No supported devices connected", you'll need to launch either an iOS or Android emulator. 
+
+If you want to run an iOS emulator, you can use `open -a Simulator` to launch an iOS device emulator. If you want to launch an Android emulator you'll need to open Android Studio and create a new device in the AVD window.
+
+Then run `flutter devices` in your console to ensure at least one of the above emulators is available. Try run `flutter run` again.
+
+Taken from https://docs.flutter.dev/get-started/install/macos
+
+If you have both iOS and Android emulators running and you want to specify which to target, you can use `flutter run -d <device-id>`
+
 Open the project in your Flutter IDE of choice (VSCode for me)
 
-Pick your mobile simulator of choice, then hit F5 to run the application.
+Pick your mobile emulator of choice, then hit F5 to run the application.
 
 This project is a starting point for a Flutter application.
 
