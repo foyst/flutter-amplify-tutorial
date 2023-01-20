@@ -18,13 +18,15 @@ This repo demonstrates how to get up and running with Flutter for cross-platform
 
 Check out this repository
 
-Run an `amplify init` to setup your local environment
+Run the following commands to get started:
 
-Follow this up with an `amplify push` to provision the Auth, Storage and API features in your AWS Account
+ `amplify init` to setup your local environment. Specify the AWS credentials you'd like to use
 
-Run `dart pub get` to install all Dart dependencies.
+`amplify push` to provision the Auth, Storage and API features in your AWS Account
 
-Finally, run `flutter run` to launch the app in the iOS emulator (if you're on Mac, otherwise it's an Android AVD if you have one set up)
+`dart pub get` to install all Dart dependencies.
+
+`flutter run` to launch the app in the iOS emulator (if you're on Mac, otherwise it's an Android AVD if you have one set up)
 
 If you see "No supported devices connected", you'll need to launch either an iOS or Android emulator. 
 
